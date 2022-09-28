@@ -11,6 +11,7 @@ int read(int, void*, int);
 int close(int);
 int kill(int);
 int exec(char*, char**);
+
 int open(const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
@@ -23,6 +24,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int ok(void);
+
+
 
 // ulib.c
 int stat(const char*, struct stat*);

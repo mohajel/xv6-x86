@@ -191,6 +191,7 @@ struct {
 void
 consoleintr(int (*getc)(void))
 {
+  
   int c, doprocdump = 0;
 
   acquire(&cons.lock);

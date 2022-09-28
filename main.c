@@ -1,3 +1,5 @@
+// in the name of God
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -5,6 +7,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
+
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
@@ -18,11 +21,17 @@ int
 main(void)
 {
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
+
   kvmalloc();      // kernel page table
+
   mpinit();        // detect other processors
+
   lapicinit();     // interrupt controller
+
   seginit();       // segment descriptors
+
   picinit();       // disable pic
+
   ioapicinit();    // another interrupt controller
   consoleinit();   // console hardware
   uartinit();      // serial port

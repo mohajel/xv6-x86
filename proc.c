@@ -120,6 +120,9 @@ found:
 void
 userinit(void)
 {
+  cprintf(" \t --- proc.c userinit --- \n");
+
+
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 

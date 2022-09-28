@@ -1458,7 +1458,12 @@ sbrktest(void)
     exit();
   }
   lastaddr = (char*) (BIG-1);
+
+  // updated
+  #pragma GCC diagnostic ignored "-Wstringop-overflow"
   *lastaddr = 99;
+  #pragma GCC diagnostic pop
+  // *lastaddr = 99;
 
   // can one de-allocate?
   a = sbrk(0);
