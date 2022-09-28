@@ -56,6 +56,17 @@ mpenter(void)
   mpmain();
 }
 
+//FUNC
+static void 
+print_group_names()
+{
+  cprintf(" \t --- ------------------------------- --- \n");
+  cprintf(" \t --- In the Name of God              --- \n");
+  cprintf(" \t --- M.sadegi -- 810199483           --- \n");
+  cprintf(" \t --- M.backshayesh -- 810199385      --- \n");
+  cprintf(" \t --- ------------------------------- --- \n");
+}
+
 // Common CPU setup code.
 static void
 mpmain(void)
@@ -63,6 +74,7 @@ mpmain(void)
   cprintf("cpu%d: starting %d\n", cpuid(), cpuid());
   idtinit();       // load idt register
   xchg(&(mycpu()->started), 1); // tell startothers() we're up
+  print_group_names();
   scheduler();     // start running processes
 }
 

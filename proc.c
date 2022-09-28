@@ -115,14 +115,12 @@ found:
   return p;
 }
 
+
 //PAGEBREAK: 32
 // Set up first user process.
 void
 userinit(void)
 {
-  cprintf(" \t --- proc.c userinit --- \n");
-
-
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
@@ -329,7 +327,10 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
   
-  for(;;){
+  //always loops here
+  for(;;)
+  {
+
     // Enable interrupts on this processor.
     sti();
 
