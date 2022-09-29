@@ -2,6 +2,8 @@
 // Input is from the keyboard or serial port.
 // Output is written to the screen and serial port.
 
+#define _DEBUG_MODE_ 0
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -14,6 +16,8 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
+#include <stdbool.h>
+
 
 static void consputc(int);
 
@@ -179,58 +183,192 @@ consputc(int c)
 }
 
 #define INPUT_BUF 128
-struct {
+#define SAFE_ZONE 130 //for '\0'
+#define TAB_COMPLETEN_SIZE 15
+#define C(x)  ((x)-'@')  // Control-x
+
+struct 
+{
   char buf[INPUT_BUF];
   uint r;  // Read index
   uint w;  // Write index
   uint e;  // Edit index
 } input;
 
-#define C(x)  ((x)-'@')  // Control-x
+static char tab_table[TAB_COMPLETEN_SIZE][SAFE_ZONE];
+
+//FUNC
+void 
+get_last_line(char* last_line)
+{
+  int start = input.w % INPUT_BUF;
+  int end = input.e % INPUT_BUF;
+  int index = 0;
+
+  while(1)
+  {
+    if (start >= INPUT_BUF)
+      start -= INPUT_BUF;
+
+    last_line[index] = input.buf[start];
+
+    if (start == end)
+      break;
+
+    index ++;
+    start ++;
+  }
+  last_line[index] = '\0';
+}
+
+int get_size(char* string)
+{
+  for (int i = 0; i < SAFE_ZONE; ++i)
+    if (string[i] == '\0')
+      return i;
+  return 0;
+}
+
+//FUNC
+void
+get_reverse_of_last_line(char* last_line, char* reverse)
+{
+  int size = get_size(last_line);
+  int index = 0;
+
+  for (int i = size - 1; i >= 0; --i)
+  {
+    reverse[index] = last_line[i];
+    index ++;
+  }
+  reverse[index] = '\0';
+}
+
+//FUNC
+void clear_line(int line_size)
+{
+  for (int i = 0; i < line_size; ++i)
+    consputc(BACKSPACE);
+  input.e -= line_size;
+}
+
+bool is_num(char ch)
+{
+  if (ch >= '0' && ch <='9')
+    return true;
+  return false;
+}
+
+//FUNC
+void
+filter_numbers(char* line, char* filterd)
+{
+  int size = get_size(line);
+  int index = 0;
+
+  for (int i = 0; i < size; ++i)
+    if (!is_num(line[i]))
+    {
+      filterd[index] = line[i];
+      index ++;
+    }
+  filterd[index] = '\0';
+}
+
+//Func
+void cout(char* str)
+{
+  for (int i = 0; i < get_size(str); ++i)
+  {
+    consputc(str[i]);
+    input.buf[input.e % INPUT_BUF] = str[i];
+    input.e ++;
+  }
+}
 
 void
 consoleintr(int (*getc)(void))
 {
-  
+  char last_line[SAFE_ZONE];
+  get_last_line(last_line);
+
+  if (_DEBUG_MODE_)
+  {
+    cprintf("\t -- begenning of consoleintr func -- \n \t -- buffer ::");
+    for (int i = 0; i < 8; ++i)
+    {
+      consputc(input.buf[i]);
+    }
+
+    cprintf("\n\t -- last_line : %s -- \n", last_line);
+    cprintf("\n\t -- Read : %d -- \n", input.r);
+    cprintf("\t -- Write : %d -- \n", input.w);
+    cprintf("\t -- Edit : %d -- \n", input.e);
+  }
+
   int c, doprocdump = 0;
 
   acquire(&cons.lock);
-  while((c = getc()) >= 0){
-    switch(c){
-    case C('P'):  // Process listing.
-      // procdump() locks cons.lock indirectly; invoke later
-      doprocdump = 1;
+  while((c = getc()) >= 0)
+  {
+
+    switch(c)
+    {
+      case C('N'):
+        clear_line(get_size(last_line));
+        char line_without_num[SAFE_ZONE];
+        filter_numbers(last_line, line_without_num);
+        cout(line_without_num);
       break;
-    case C('U'):  // Kill line.
-      while(input.e != input.w &&
-            input.buf[(input.e-1) % INPUT_BUF] != '\n'){
-        input.e--;
-        consputc(BACKSPACE);
-      }
+
+      case C('R'): // Reverse line
+        clear_line(get_size(last_line));
+        char reverse_last_line[SAFE_ZONE];
+        get_reverse_of_last_line(last_line, reverse_last_line);
+        cout(reverse_last_line);
       break;
-    case C('H'): case '\x7f':  // Backspace
-      if(input.e != input.w){
-        input.e--;
-        consputc(BACKSPACE);
-      }
+
+      case C('P'):  // Process listing.
+        // procdump() locks cons.lock indirectly; invoke later
+        doprocdump = 1;
       break;
-    default:
-      if(c != 0 && input.e-input.r < INPUT_BUF){
-        c = (c == '\r') ? '\n' : c;
-        input.buf[input.e++ % INPUT_BUF] = c;
-        consputc(c);
-        if(c == '\n' || c == C('D') || input.e == input.r+INPUT_BUF){
-          input.w = input.e;
-          wakeup(&input.r);
+
+      case C('U'):  // Kill line.
+        clear_line(get_size(last_line)); //works perfectly fine
+
+        // while(input.e != input.w &&
+        //       input.buf[(input.e-1) % INPUT_BUF] != '\n'){
+        //   input.e--;
+        //   consputc(BACKSPACE);
+        // }
+      break;
+
+      case C('H'): case '\x7f':  // Backspace
+        if(input.e != input.w){
+          input.e--;
+          consputc(BACKSPACE);
         }
-      }
       break;
-    }
+
+      default:
+        if(c != 0 && input.e-input.r < INPUT_BUF){
+          c = (c == '\r') ? '\n' : c;
+          input.buf[input.e++ % INPUT_BUF] = c;
+          consputc(c);
+          if(c == '\n' || c == C('D') || input.e == input.r+INPUT_BUF){
+            input.w = input.e;
+            wakeup(&input.r);
+          }
+        }
+      break;
+      }
   }
   release(&cons.lock);
   if(doprocdump) {
     procdump();  // now call procdump() wo. cons.lock held
   }
+  if (_DEBUG_MODE_)
+    cprintf("\t -- end of consoleintr func -- \n\n\n");
 }
 
 int

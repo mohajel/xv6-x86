@@ -7,6 +7,18 @@
 
 char *argv[] = { "sh", 0 };
 
+
+//FUNC
+void 
+print_group_names()
+{
+  printf(1, " \t --- ------------------------------- --- \n");
+  printf(1, " \t --- In the Name of God              --- \n");
+  printf(1, " \t --- M.sadegi -- 810199483           --- \n");
+  printf(1, " \t --- M.backshayesh -- 810199381      --- \n");
+  printf(1, " \t --- ------------------------------- --- \n");
+}
+
 int
 main(void)
 {
@@ -21,6 +33,8 @@ main(void)
 
   for(;;){
     printf(1, "init: starting sh\n");
+
+    print_group_names();
     pid = fork();
     if(pid < 0){
       printf(1, "init: fork failed\n");
