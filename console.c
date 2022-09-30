@@ -320,7 +320,7 @@ int get_seggestion(char* last_line)
 {
   if (get_size(last_line) == 0)
     return NO_SUGGESTION;//NO_SUGGESTION for empty consoul!
-  
+
   int priority = index;
   do
   {
@@ -368,9 +368,6 @@ void consoleintr(int (*getc)(void))
 {
   char last_line[SAFE_ZONE];
   get_last_line(last_line);
-
-  // if (input.buf[input.e - 1] == '\n')
-    // add_to_auto_complete_table(last_line);
 
   if (_DEBUG_MODE_)
   {
@@ -433,7 +430,6 @@ void consoleintr(int (*getc)(void))
       break;
 
       case ('\r'): //Enter
-        consputc('V');
         if (get_size(last_line) > 1 && 
             str_compare(last_line, auto_complete_table[index]) == false)
           add_to_auto_complete_table(last_line);
