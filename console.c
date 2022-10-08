@@ -422,7 +422,9 @@ void consoleintr(int (*getc)(void))
 
       case ('\t'): //Tab autocompletion
         int suggestion = get_seggestion(last_line);
-        if (suggestion != NO_SUGGESTION)
+        if (suggestion == NO_SUGGESTION)
+          cout("  ");
+        else
         {
           clear_line(get_size(last_line));
           cout(auto_complete_table[suggestion]);
