@@ -14,8 +14,10 @@ print_group_names()
 {
   printf(1, " \t --- ------------------------------- --- \n");
   printf(1, " \t --- In the Name of God              --- \n");
+  printf(1, " \t --- Group number:  4                --- \n");
   printf(1, " \t --- M.sadegi -- 810199483           --- \n");
-  printf(1, " \t --- M.backshayesh -- 810199381      --- \n");
+  printf(1, " \t --- M.bakhshayesh -- 810199381      --- \n");
+  printf(1, " \t --- M.mirzajani -- 810101077        --- \n");
   printf(1, " \t --- ------------------------------- --- \n");
 }
 

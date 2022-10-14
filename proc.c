@@ -87,7 +87,7 @@ allocproc(void)
 
 found:
   p->state = EMBRYO;
-  p->pid = nextpid++;
+  p->pid = nextpid++; //uniqe pid
 
   release(&ptable.lock);
 
