@@ -1,6 +1,5 @@
 // in the nae of God
 
-// my first user program sample which uses user defined syscals
 #include "types.h"
 #include "stat.h"
 #include "user.h"
