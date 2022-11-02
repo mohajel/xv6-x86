@@ -4,4 +4,4 @@ echo "starting linux xv6 ..."
 
 make clean
 make
-make qemu-nox
+make qemu-nox-gdb

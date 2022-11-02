@@ -315,7 +315,7 @@ bool has_same_beginig(char* last_line, char* suggestion)
   return true;
 }
 
-//FUNC
+//returns suggestion for tab completion
 int get_seggestion(char* last_line)
 {
   if (get_size(last_line) == 0)
