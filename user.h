@@ -26,9 +26,12 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+
 int ok(void);
-void change_file_size(const char *path, int length);
 int find_largest_prime_factor(int n);
+void change_file_size(const char *path, int length);
+void get_callers(int syscall_number);
+int get_parent_pid(void);
 
 
 // ulib.c
