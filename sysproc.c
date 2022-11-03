@@ -100,8 +100,20 @@ sys_ok(void)
 
 int sys_find_largest_prime_factor(void)
 {
-	return 12;
+	int number = myproc()->tf->edx ;
+	int div = 2, maxFact;
 
+	while (number != 1)
+	{
+		if (number % div != 0)
+			div = div + 1;
+		else
+		{
+			maxFact = number;
+			number = number / div;
+		}
+	}
+	return maxFact;
 }
 
 int sys_change_file_size(void)
@@ -116,7 +128,6 @@ int sys_get_callers(void)
 
 int sys_get_parent_pid(void)
 {
-	return 23;
-
+	return myproc()->parent->pid;
 }
 
