@@ -28,7 +28,7 @@ int sleep(int);
 int uptime(void);
 
 int ok(void);
-int find_largest_prime_factor(int n);
+int find_largest_prime_factor();
 void change_file_size(const char *path, int length);
 void get_callers(int syscall_number);
 int get_parent_pid(void);
