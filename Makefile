@@ -184,11 +184,11 @@ UPROGS=\
 	_zombie\
 	_sample1\
 	_prime_numbers\
-	_test_parent\
-	_test_callers\
-	_test_file_size\
-	_test_prime\
-	
+	_test_prime \
+	_test_file_size \
+	_test_callers \
+	_test_parent \
+
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 
@@ -257,7 +257,11 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
-	sample1.c prime_numbers.c\
+	sample1.c prime_numbers.c \
+	test_prime.c \
+	test_file_size.c \
+	test_callers.c \
+	test_parent.c \
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\

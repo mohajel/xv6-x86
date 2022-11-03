@@ -1,4 +1,4 @@
-// in the nae of God
+// in the name of God
 
 // my first user program sample which uses user defined syscals
 #include "types.h"

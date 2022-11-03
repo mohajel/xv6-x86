@@ -92,8 +92,7 @@ sys_uptime(void)
 	return xticks;
 }
 
-int
-sys_ok(void)
+int sys_ok(void)
 {
 	return 13;
 }
@@ -101,7 +100,7 @@ sys_ok(void)
 int sys_find_largest_prime_factor(void)
 {
 	int number = myproc()->tf->edx ;
-	int div = 2, maxFact;
+	int div = 2, maxFact = 0;
 
 	while (number != 1)
 	{
@@ -123,6 +122,8 @@ int sys_change_file_size(void)
 
 int sys_get_callers(void)
 {
+	int syscall_number;
+	argint(0, &syscall_number);
 	return 78;
 }
 
