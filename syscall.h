@@ -22,3 +22,7 @@
 #define SYS_close  21
 // ADDED
 #define SYS_ok     22 
+#define SYS_find_largest_prime_factor 23
+#define SYS_change_file_size 24
+#define SYS_get_callers 25
+#define SYS_get_parent_pid 26

@@ -11,6 +11,8 @@ int read(int, void*, int);
 int close(int);
 int kill(int);
 int exec(char*, char**);
+void get_callers(int syscall_number);
+int get_parent_pid(void);
 
 int open(const char*, int);
 int mknod(const char*, short, short);
@@ -25,7 +27,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int ok(void);
-
+void change_file_size(const char *path, int length);
+int find_largest_prime_factor(int n);
 
 
 // ulib.c
