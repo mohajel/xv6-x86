@@ -115,11 +115,6 @@ int sys_find_largest_prime_factor(void)
 	return maxFact;
 }
 
-int sys_change_file_size(void)
-{
-	return 78;
-}
-
 int sys_get_callers(void)
 {
 	int syscall_number;
