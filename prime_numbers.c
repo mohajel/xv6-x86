@@ -16,8 +16,12 @@ int string_to_int(char* str)
 
 bool is_prime(int num)
 {
-  if ((num == 1) | (num == 2) | (num == 3))
+  if(num < 2)
+    return false;
+
+  if ((num == 2) | (num == 3))
     return true;
+    
   for (int i = 2; i <= num / 2; ++i)
     if (num % i == 0)
       return false;
