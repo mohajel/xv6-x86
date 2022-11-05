@@ -1,5 +1,6 @@
 #include "user.h"
 #include <stdio.h>
+#include <string.h>
 #define NOTHING -1
 
 void 
@@ -43,6 +44,8 @@ test_parent(int test_levels){
         }
 
         test_parent(test_levels - 1);
+
+        exit();
     }else{
         //parent
         print("proccess %d has been forked(child id : %d)",root_pid, child_proc,NOTHING);
@@ -59,6 +62,8 @@ print(char* message, int first_arg, int second_arg, int third_arg){
     char buffer[250] = {0};
 
     sprintf(buffer, message, first_arg, second_arg, third_arg);
+
+    strcat(buffer, "\n");
 
     write(0,buffer, strlen(buffer));
 }
