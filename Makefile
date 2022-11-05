@@ -185,6 +185,7 @@ UPROGS=\
 	_sample1\
 	_prime_numbers\
 	_test_parent\
+	_test_callers\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
