@@ -9,7 +9,6 @@ print(char* message, int first_arg, int second_arg, int third_arg);
 void
 test_parent(int test_levels);
 
-
 int
 main(int argc, char *argv[])
 {
@@ -46,12 +45,15 @@ test_parent(int test_levels){
         test_parent(test_levels - 1);
 
         exit();
-    }else{
+    }else if(child_proc > 0){
         //parent
         print("proccess %d has been forked(child id : %d)",root_pid, child_proc,NOTHING);
         wait();
 
         test_parent(test_levels - 1);
+    }else{
+        print("proccess %d failed on fork",root_pid, NOTHING,NOTHING);
+        exit();
     }
 }
 
