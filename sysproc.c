@@ -119,7 +119,7 @@ int sys_get_callers(void)
 {
 	int syscall_number;
 	argint(0, &syscall_number);
-	return 78;
+	return get_callers(syscall_number);
 }
 
 int sys_get_parent_pid(void)

@@ -15,58 +15,59 @@
 
 // Fetch the int at addr from the current process.
 int
-fetchint(uint addr, int *ip)
+fetchint(uint addr, int* ip)
 {
-  struct proc *curproc = myproc();
+	struct proc* curproc = myproc();
 
-  if(addr >= curproc->sz || addr+4 > curproc->sz)
-    return -1;
-  *ip = *(int*)(addr);
-  return 0;
+	if (addr >= curproc->sz || addr + 4 > curproc->sz)
+		return -1;
+	*ip = *(int*)(addr);
+	return 0;
 }
 
 // Fetch the nul-terminated string at addr from the current process.
 // Doesn't actually copy the string - just sets *pp to point at it.
 // Returns length of string, not including nul.
 int
-fetchstr(uint addr, char **pp)
+fetchstr(uint addr, char** pp)
 {
-  char *s, *ep;
-  struct proc *curproc = myproc();
+	char* s, * ep;
+	struct proc* curproc = myproc();
 
-  if(addr >= curproc->sz)
-    return -1;
-  *pp = (char*)addr;
-  ep = (char*)curproc->sz;
-  for(s = *pp; s < ep; s++){
-    if(*s == 0)
-      return s - *pp;
-  }
-  return -1;
+	if (addr >= curproc->sz)
+		return -1;
+	*pp = (char*)addr;
+	ep = (char*)curproc->sz;
+	for (s = *pp; s < ep; s++)
+	{
+		if (*s == 0)
+			return s - *pp;
+	}
+	return -1;
 }
 
 // Fetch the nth 32-bit system call argument.
 int
-argint(int n, int *ip)
+argint(int n, int* ip)
 {
-  return fetchint((myproc()->tf->esp) + 4 + 4*n, ip);
+	return fetchint((myproc()->tf->esp) + 4 + 4 * n, ip);
 }
 
 // Fetch the nth word-sized system call argument as a pointer
 // to a block of memory of size bytes.  Check that the pointer
 // lies within the process address space.
 int
-argptr(int n, char **pp, int size)
+argptr(int n, char** pp, int size)
 {
-  int i;
-  struct proc *curproc = myproc();
- 
-  if(argint(n, &i) < 0)
-    return -1;
-  if(size < 0 || (uint)i >= curproc->sz || (uint)i+size > curproc->sz)
-    return -1;
-  *pp = (char*)i;
-  return 0;
+	int i;
+	struct proc* curproc = myproc();
+
+	if (argint(n, &i) < 0)
+		return -1;
+	if (size < 0 || (uint)i >= curproc->sz || (uint)i + size > curproc->sz)
+		return -1;
+	*pp = (char*)i;
+	return 0;
 }
 
 // Fetch the nth word-sized system call argument as a string pointer.
@@ -74,12 +75,12 @@ argptr(int n, char **pp, int size)
 // (There is no shared writable memory, so the string can't change
 // between this check and being used by the kernel.)
 int
-argstr(int n, char **pp)
+argstr(int n, char** pp)
 {
-  int addr;
-  if(argint(n, &addr) < 0)
-    return -1;
-  return fetchstr(addr, pp);
+	int addr;
+	if (argint(n, &addr) < 0)
+		return -1;
+	return fetchstr(addr, pp);
 }
 
 extern int sys_chdir(void);
@@ -111,7 +112,7 @@ extern int sys_get_callers(void);
 extern int sys_get_parent_pid(void);
 
 static int (*syscalls[])(void) = {
-[SYS_fork]                      sys_fork,
+[SYS_fork] sys_fork,
 [SYS_exit]                      sys_exit,
 [SYS_wait]                      sys_wait,
 [SYS_pipe]                      sys_pipe,
@@ -142,15 +143,19 @@ static int (*syscalls[])(void) = {
 void
 syscall(void)
 {
-  int num;
-  struct proc *curproc = myproc();
+	int num;
+	struct proc* curproc = myproc();
 
-  num = curproc->tf->eax;
-  if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    curproc->tf->eax = syscalls[num]();//exicutes syscall[num] and wrtite dones result in eax register
-  } else {
-    cprintf("%d %s: unknown sys call %d\n",
-            curproc->pid, curproc->name, num);
-    curproc->tf->eax = -1;
-  }
+	num = curproc->tf->eax;
+	if (num > 0 && num < NELEM(syscalls) && syscalls[num])
+	{
+		curproc->tf->eax = syscalls[num]();//exicutes syscall[num] and wrtite dones result in eax register
+		curproc->syscall_count[num] ++;
+	}
+	else
+	{
+		cprintf("%d %s: unknown sys call %d\n",
+			curproc->pid, curproc->name, num);
+		curproc->tf->eax = -1;
+	}
 }
