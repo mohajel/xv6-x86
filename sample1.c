@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	printf(1, "........sample 1......\n");
 	// int x = 123;
 	fork();
-	fork();
+	fork();  
 	fork();
 	printf(1,"hello\n"); 
 	// printf(1, "my favorite number is : %d\n", ok());
