@@ -1,3 +1,0 @@
-prime_numbers 1 111
-prime_numbers 2000 111
-cat p_nums.tex

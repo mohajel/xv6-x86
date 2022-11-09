@@ -1,3 +1,7 @@
+#ifndef NOTHING
+#define NOTHING -1
+#endif
+
 struct stat;
 struct rtcdate;
 
@@ -47,3 +51,14 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int min(int a, int b);
+int max(int a, int b);
+int countDigits(int number);
+int power(int base, int power);
+int abc(int number);
+int getDigit(int number, int digitIndex);
+void writeNumber(char* dst, int* writeCurser, int dstCapacity, int src);
+void cookString(int bufferSize, char* buffer, char* source, int* args, int argCount);
+int print(char* message, int arg1, int arg2, int arg3);
+int printSingleArg(char* message, int arg);
+int printArgLess(char* message);
