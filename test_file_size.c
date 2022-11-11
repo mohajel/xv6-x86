@@ -21,8 +21,18 @@ int main(int argc, char *argv[])
 
     printArgLess("starting test...");
 
-    test_change_file_size("./temp_file_inc_size.txt",1024,+512);
-    test_change_file_size("./temp_file_dec_size.txt",1024,-256);
+    test_change_file_size("./temp_file.txt",1024,+2048);
+    test_change_file_size("./temp_file.txt",1024,+3000);
+    test_change_file_size("./temp_file.txt",1024,+500);
+    test_change_file_size("./temp_file.txt",1024,0);
+    test_change_file_size("./temp_file.txt",0,+2048);
+    test_change_file_size("./temp_file.txt",0,+3000);
+    test_change_file_size("./temp_file.txt",0,+500);
+    test_change_file_size("./temp_file.txt",0,0);    
+    test_change_file_size("./temp_file.txt",1024,0);
+    test_change_file_size("./temp_file.txt",1024,-1024);
+    test_change_file_size("./temp_file.txt",1024,-512);
+    test_change_file_size("./temp_file.txt",1024,-600);
 
     printArgLess("test finished");
 
@@ -41,13 +51,13 @@ test_change_file_size(char* path, int init_size, int change_amount){
     int size_before = get_file_size(path);
 
     //sys call
-    change_file_size(path, init_size + change_amount);
+    change_file_size(path, size_before + change_amount);
 
     //testing size
     int size_after = get_file_size(path);
 
     //report
-    print("test finished init size : %d changed_size : %d success : %d", size_before, size_after, size_before + change_amount == size_after);
+    print("test Entry-> init size : %d changed_size : %d success : %d", size_before, size_after, size_before + change_amount == size_after);
 
     //delete file
     delete_file(path);
@@ -59,7 +69,7 @@ create_file(char* path, int size){
     int fd = open(path, O_CREATE | O_RDWR);
 
     if(fd < 0) {
-        printArgLess("Failed to create file");
+        printArgLess("Failed to open file");
         exit();
     }
 

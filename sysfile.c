@@ -16,6 +16,8 @@
 #include "file.h"
 #include "fcntl.h"
 
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
 static int
@@ -226,8 +228,7 @@ sys_unlink(void)
 	memset(&de, 0, sizeof(de));
 	if (writei(dp, (char*)&de, off, sizeof(de)) != sizeof(de))
 		panic("unlink: writei");
-	if (ip->type == T_DIR)	
-{
+	if (ip->type == T_DIR){
 		dp->nlink--;
 		iupdate(dp);
 	}
@@ -317,8 +318,7 @@ sys_open(void)
 	}
 	else
 	{
-		if ((ip = namei(path)) == 0)		
-{
+		if ((ip = namei(path)) == 0){
 			end_op();
 			return -1;
 		}
@@ -469,63 +469,40 @@ sys_pipe(void)
 	return 0;
 }
 
-// int openfile(char* path, int omode)
-// {
-// 	char* path;
-// 	int fd, omode;
-// 	struct file* f;
-// 	struct inode* ip;
-
-// 	begin_op();
-
-// 	if (omode & O_CREATE)
-// 	{
-// 		ip = create(path, T_FILE, 0, 0);
-// 		if (ip == 0)
-// 		{
-// 			end_op();
-// 			return -1;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		if ((ip = namei(path)) == 0)		
-// {
-// 			end_op();
-// 			return -1;
-// 		}
-// 		ilock(ip);
-// 		if (ip->type == T_DIR && omode != O_RDONLY)
-// 		{
-// 			iunlockput(ip);
-// 			end_op();
-// 			return -1;
-// 		}
-// 	}
-
-// 	if ((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0)
-// 	{
-// 		if (f)
-// 			fileclose(f);
-// 		iunlockput(ip);
-// 		end_op();
-// 		return -1;
-// 	}
-// 	iunlock(ip);
-// 	end_op();
-
-// 	f->type = FD_INODE;
-// 	f->ip = ip;
-// 	f->off = 0;
-// 	f->readable = !(omode & O_WRONLY);
-// 	f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
-// 	return fd;
-// }
-
-
 int sys_change_file_size(void)
 {
-	// int pid = open("file1.txt", O_CREATE | O_RDWR);
-	// close(pid);
-	return 78;
+	const int BUFFER_SIZE = 1024;
+	int goalsize, offset;
+	char *path, buffer[BUFFER_SIZE];
+	struct inode* ip;
+
+	begin_op();
+
+	if (argstr(0, &path) < 0 ||
+		argint(1, &goalsize) < 0 || 
+		goalsize < 0 || 
+		(ip = namei(path)) <= 0 || 
+		ip->type != T_FILE
+		){
+			end_op();
+			return -1;
+	}
+	
+	ilock(ip);
+
+	if(ip->size > goalsize){
+		ip->size = goalsize;
+	}else if (ip->size < goalsize){
+		memset(buffer,'\0',BUFFER_SIZE);
+		for(
+			offset = ip->size; 
+			offset < goalsize; 
+			offset += writei(ip,buffer,offset,min(BUFFER_SIZE, goalsize - offset))
+		);
+	}
+
+	iupdate(ip);
+	iunlockput(ip);
+	end_op();
+	return 0;
 }

@@ -41,7 +41,12 @@ test_prime(int number, int expected){
     int result = call_prime_sys_call_dirty_version(number);
 
     print("number %d -> sys call returned %d expected %d ",number,result,expected);
-    
+
+	if(result == expected){
+		printArgLess("    Success!");
+	}else{
+		printArgLess("     Test Failed :(");
+	}
 }
 
 

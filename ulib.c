@@ -109,6 +109,8 @@ int min(int a, int b){ return a < b ? a : b;}
 int max(int a, int b){ return a > b ? a : b;}
 
 int countDigits(int number){
+  
+    if(number == 0) return 1;
 
     int count = 0;
 

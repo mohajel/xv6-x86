@@ -49,11 +49,13 @@ main(int argc, char *argv[])
         
     }
 
-    write_wrapper("test finished");
 
     get_callers(SYS_write);
     get_callers(SYS_fork);
     get_callers(SYS_wait);
+
+    write_wrapper("test finished");
+
 
     exit();
 

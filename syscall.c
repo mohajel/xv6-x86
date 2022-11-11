@@ -104,15 +104,13 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
-
-extern int sys_ok(void);
 extern int sys_find_largest_prime_factor(void);
 extern int sys_change_file_size(void);
 extern int sys_get_callers(void);
 extern int sys_get_parent_pid(void);
 
 static int (*syscalls[])(void) = {
-[SYS_fork] sys_fork,
+[SYS_fork] 						sys_fork,
 [SYS_exit]                      sys_exit,
 [SYS_wait]                      sys_wait,
 [SYS_pipe]                      sys_pipe,
@@ -133,7 +131,6 @@ static int (*syscalls[])(void) = {
 [SYS_link]                      sys_link,
 [SYS_mkdir]                     sys_mkdir,
 [SYS_close]                     sys_close,
-[SYS_ok]                        sys_ok,
 [SYS_find_largest_prime_factor] sys_find_largest_prime_factor,
 [SYS_change_file_size]          sys_change_file_size,
 [SYS_get_callers]               sys_get_callers,
@@ -149,8 +146,8 @@ syscall(void)
 	num = curproc->tf->eax;
 	if (num > 0 && num < NELEM(syscalls) && syscalls[num])
 	{
-		curproc->tf->eax = syscalls[num]();//exicutes syscall[num] and wrtite dones result in eax register
 		curproc->syscall_count[num] ++;
+		curproc->tf->eax = syscalls[num]();//exicutes syscall[num] and wrtite dones result in eax register
 	}
 	else
 	{

@@ -567,9 +567,10 @@ int get_callers(int syscall_number)
 {
 	struct proc *p;
 	acquire(&ptable.lock);
+	cprintf("syscall number %d was called by:\n",syscall_number);
 	for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
 		if (p->syscall_count[syscall_number] != 0)
-			cprintf("pid: %d, name: %s, count: %d\n",
+			cprintf("    pid: %d, name: %s, count: %d\n",
 					p->pid, p->name, p->syscall_count[syscall_number]);
 
 	release(&ptable.lock);
