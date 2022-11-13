@@ -6,8 +6,36 @@ int wait_wrapper(void);
 int write_wrapper(void*);
 int fork_wrapper(void);
 
-int
-main(int argc, char *argv[])
+void print_info()
+{
+    printf(1, " ---- PID is %d: \n ", getpid());
+    printf(1, " ---- calling  SYS_write: \n ");
+    get_callers(SYS_write);
+    printf(1, " ---- calling  SYS_fork: \n ");
+    get_callers(SYS_fork);
+    printf(1, " ---- calling  SYS_wait: \n ");
+    get_callers(SYS_wait);   
+    printf(1, " ---- ---- ---- ---- ---- ---- ---- \n\n ");
+}
+
+void test_2()
+{
+    printf(1, " ---- test_2 started \n ");
+    print_info();
+
+    int x = fork();
+
+    if (x == 0) // child processs
+    {
+        printf(1, " ---- calling inside child process\n ");
+        print_info();
+    }
+    else
+        wait();  
+}
+
+
+void tast_1()
 {
     write_wrapper("starting test...");
 
@@ -49,13 +77,20 @@ main(int argc, char *argv[])
         
     }
 
-
     get_callers(SYS_write);
     get_callers(SYS_fork);
     get_callers(SYS_wait);
 
     write_wrapper("test finished");
+}
 
+
+int
+main(int argc, char *argv[])
+{
+    // test_1();
+
+    test_2();
 
     exit();
 
