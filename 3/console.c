@@ -14,6 +14,8 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
+#include <stdbool.h>
+
 
 static void consputc(int);
 
@@ -178,58 +180,280 @@ consputc(int c)
   cgaputc(c);
 }
 
+#define _DEBUG_MODE_ 0
 #define INPUT_BUF 128
-struct {
+#define SAFE_ZONE 130 //for '\0'
+#define AUTO_COMPLEATION_SIZE 15
+#define NO_SUGGESTION -1
+#define C(x)  ((x)-'@')  // Control-x
+
+struct 
+{
   char buf[INPUT_BUF];
   uint r;  // Read index
   uint w;  // Write index
   uint e;  // Edit index
 } input;
 
-#define C(x)  ((x)-'@')  // Control-x
+static int index = -1;
+static char auto_complete_table[AUTO_COMPLEATION_SIZE][SAFE_ZONE];
 
-void
-consoleintr(int (*getc)(void))
+int get_size(char* string)
 {
+  for (int i = 0; i < SAFE_ZONE; ++i)
+    if (string[i] == '\0')
+      return i;
+  return 0;
+}
+
+ bool str_compare(char* str1, char* str2)
+ {
+  int size;
+  if ((size = get_size(str1)) != get_size(str2))
+    return false;
+
+  for (int i = 0; i < size; ++i)
+    if (str1[i] != str2[i])
+      return false;
+  return true;
+ }
+
+//prints with changing buffer
+void cout(char* str)
+{
+  for (int i = 0; i < get_size(str); ++i)
+  {
+    consputc(str[i]);
+    input.buf[input.e % INPUT_BUF] = str[i];
+    input.e ++;
+  }
+}
+
+//prints without changing buffer
+void print_consoul(char* str)
+{
+  for (int i = 0; i < get_size(str); ++i)
+    consputc(str[i]);
+}
+
+// must check size befor using this func
+void str_copy(char* from_string, char* to_string)
+{
+  int size = get_size(from_string);
+
+  for (int i = 0; i < size; ++i)
+    to_string[i] = from_string[i];
+
+  to_string[size] = '\0';
+}
+
+void add_to_auto_complete_table(char* last_line)
+{
+  index ++;
+  if (index == AUTO_COMPLEATION_SIZE)
+    index = 0;
+
+  str_copy(last_line, auto_complete_table[index]);
+
+  if (_DEBUG_MODE_)
+  {
+    print_consoul("\nadded to auto complete:");
+    print_consoul(auto_complete_table[index]);
+    print_consoul("\n to index :");
+    char ind = '0' + index;
+    consputc(ind);
+  }
+}
+
+//FUNC
+void 
+get_last_line(char* last_line)
+{
+  int start = input.w % INPUT_BUF;
+  int end = input.e % INPUT_BUF;
+  int index = 0;
+
+  while(1)
+  {
+    if (start >= INPUT_BUF)
+      start -= INPUT_BUF;
+
+    last_line[index] = input.buf[start];
+
+    if (start == end)
+      break;
+
+    index ++;
+    start ++;
+  }
+  last_line[index] = '\0';
+}
+
+//FUNC
+void get_reverse_of_last_line(char* last_line, char* reverse)
+{
+  int size = get_size(last_line);
+  int index = 0;
+
+  for (int i = size - 1; i >= 0; --i)
+  {
+    reverse[index] = last_line[i];
+    index ++;
+  }
+  reverse[index] = '\0';
+}
+
+bool has_same_beginig(char* last_line, char* suggestion)
+{
+  int size;
+  if ((size = get_size(last_line)) >= get_size(suggestion))
+    return false;
+
+  for (int i = 0; i < size; ++i)
+    if (last_line[i] != suggestion[i])
+      return false;
+  return true;
+}
+
+//FUNC
+int get_seggestion(char* last_line)
+{
+  if (get_size(last_line) == 0)
+    return NO_SUGGESTION;//NO_SUGGESTION for empty consoul!
+
+  int priority = index;
+  do
+  {
+    if (priority == -1)
+      priority = AUTO_COMPLEATION_SIZE - 1;
+    if (has_same_beginig(last_line, auto_complete_table[priority]))
+      return priority;
+    priority --;
+  } while (priority != index);
+
+  return NO_SUGGESTION;
+}
+
+//FUNC
+void clear_line(int line_size)
+{
+  for (int i = 0; i < line_size; ++i)
+    consputc(BACKSPACE);
+  input.e -= line_size;
+}
+
+bool is_num(char ch)
+{
+  if (ch >= '0' && ch <='9')
+    return true;
+  return false;
+}
+
+//FUNC
+void filter_numbers(char* line, char* filterd)
+{
+  int size = get_size(line);
+  int index = 0;
+
+  for (int i = 0; i < size; ++i)
+    if (!is_num(line[i]))
+    {
+      filterd[index] = line[i];
+      index ++;
+    }
+  filterd[index] = '\0';
+}
+
+void consoleintr(int (*getc)(void))
+{
+  char last_line[SAFE_ZONE];
+  get_last_line(last_line);
+
+  if (_DEBUG_MODE_)
+  {
+    cprintf("\t -- begenning of consoleintr func -- \n \t -- buffer ::");
+    for (int i = 0; i < 8; ++i)
+      consputc(input.buf[i]);
+    cprintf("\n\t -- last_line : %s -- \n", last_line);
+    cprintf("\n\t -- Read : %d -- \n", input.r);
+    cprintf("\t -- Write : %d -- \n", input.w);
+    cprintf("\t -- Edit : %d -- \n", input.e);
+  }
+
   int c, doprocdump = 0;
 
   acquire(&cons.lock);
-  while((c = getc()) >= 0){
-    switch(c){
-    case C('P'):  // Process listing.
-      // procdump() locks cons.lock indirectly; invoke later
-      doprocdump = 1;
+  while((c = getc()) >= 0)
+  {
+    if (_DEBUG_MODE_)
+      consputc(c);
+
+    switch(c)
+    {
+      case C('N'): // Delete numbers
+        clear_line(get_size(last_line));
+        char line_without_num[SAFE_ZONE];
+        filter_numbers(last_line, line_without_num);
+        cout(line_without_num);
       break;
-    case C('U'):  // Kill line.
-      while(input.e != input.w &&
-            input.buf[(input.e-1) % INPUT_BUF] != '\n'){
-        input.e--;
-        consputc(BACKSPACE);
-      }
+
+      case C('R'): // Reverse line
+        clear_line(get_size(last_line));
+        char reverse_last_line[SAFE_ZONE];
+        get_reverse_of_last_line(last_line, reverse_last_line);
+        cout(reverse_last_line);
       break;
-    case C('H'): case '\x7f':  // Backspace
-      if(input.e != input.w){
-        input.e--;
-        consputc(BACKSPACE);
-      }
+
+      case C('P'):  // Process listing.
+        // procdump() locks cons.lock indirectly; invoke later
+        doprocdump = 1;
       break;
-    default:
-      if(c != 0 && input.e-input.r < INPUT_BUF){
-        c = (c == '\r') ? '\n' : c;
-        input.buf[input.e++ % INPUT_BUF] = c;
-        consputc(c);
-        if(c == '\n' || c == C('D') || input.e == input.r+INPUT_BUF){
-          input.w = input.e;
-          wakeup(&input.r);
+
+      case C('U'):  // Kill line.
+        clear_line(get_size(last_line)); //works perfectly fine
+      break;
+
+      case C('H'): case '\x7f':  // Backspace
+        if(input.e != input.w){
+          input.e--;
+          consputc(BACKSPACE);
         }
-      }
       break;
-    }
+
+      case ('\t'): //Tab autocompletion
+        int suggestion = get_seggestion(last_line);
+        if (suggestion == NO_SUGGESTION)
+          cout("  ");
+        else
+        {
+          clear_line(get_size(last_line));
+          cout(auto_complete_table[suggestion]);
+        }
+      break;
+
+      case ('\r'): //Enter
+        if (get_size(last_line) > 1 && 
+            str_compare(last_line, auto_complete_table[index]) == false)
+          add_to_auto_complete_table(last_line);
+      default:
+        if(c != 0 && input.e-input.r < INPUT_BUF){
+          c = (c == '\r') ? '\n' : c;
+          input.buf[input.e++ % INPUT_BUF] = c;
+          consputc(c);
+          if(c == '\n' || c == C('D') || input.e == input.r+INPUT_BUF){
+            input.w = input.e;
+            wakeup(&input.r);
+          }
+        }
+      break;
+      }
   }
   release(&cons.lock);
   if(doprocdump) {
     procdump();  // now call procdump() wo. cons.lock held
   }
+  if (_DEBUG_MODE_)
+    cprintf("\t -- end of consoleintr func -- \n\n\n");
 }
 
 int

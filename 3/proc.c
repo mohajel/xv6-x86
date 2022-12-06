@@ -87,7 +87,7 @@ allocproc(void)
 
 found:
   p->state = EMBRYO;
-  p->pid = nextpid++;
+  p->pid = nextpid++; //uniqe pid
 
   release(&ptable.lock);
 
@@ -114,6 +114,7 @@ found:
 
   return p;
 }
+
 
 //PAGEBREAK: 32
 // Set up first user process.
@@ -326,7 +327,10 @@ scheduler(void)
   struct cpu *c = mycpu();
   c->proc = 0;
   
-  for(;;){
+  //always loops here
+  for(;;)
+  {
+
     // Enable interrupts on this processor.
     sti();
 

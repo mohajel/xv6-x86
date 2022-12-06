@@ -89,3 +89,9 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int
+sys_ok(void)
+{
+  return 13;
+}
