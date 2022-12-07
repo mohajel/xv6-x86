@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include <stddef.h>
 
 struct
 {
@@ -100,12 +101,12 @@ found:
   release(&tickslock);
   p->sch.waiting_time = 0;
   p->sch.lottery_chance = INITIAL_LOTTERY_CHANCE;
-  p->sch.executed_cycle = START_CYCLE;
+  p->sch.executed_cycles = START_CYCLE;
   p->sch.priority = p->pid; //very good decision indeed
   p->sch.priority_ratio = INITIAL_PRIORITY_RATIO;
   p->sch.start_time_ratio = INITIAL_START_TIME_RATIO;
   p->sch.exec_cycle_ratio = INITIAL_CYCLE_RATIO;
-
+  
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -342,6 +343,57 @@ wait(void)
   }
 }
 
+
+void update_waiting_time()
+{
+  struct proc *p;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state != RUNNABLE)
+      continue;
+    p->sch.waiting_time += 1;
+  }
+}
+
+//LEVEL:0 -- POLICY:Round Robin
+struct proc* get_first_level_proc()
+{
+  struct proc* p = NOT_FOUND;
+  static struct proc* prev_proc = ptable.proc;
+  
+  for (p = prev_proc + 1; p < &ptable.proc[NPROC - 1]; p++)
+    if (p->state == RUNNABLE && p->sch.level == 0)
+    {
+      prev_proc = p;
+      return p; 
+    }
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if (p->state == RUNNABLE && p->sch.level == 0) 
+    {
+      prev_proc = p;
+      return p;
+    }
+
+  return NOT_FOUND;
+}
+
+//LEVEL:1 -- POLICY:Lottery
+struct proc* get_second_level_proc()
+{
+  struct proc* p = NOT_FOUND;
+  // return p;
+  return p;
+}
+
+//LEVEL:2 -- POLICY:Best Job First
+struct proc* get_third_level_proc()
+{
+  struct proc* p = NOT_FOUND;
+  // return p;
+  return p;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -366,10 +418,21 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+
+    p = get_first_level_proc();
+
+    if (p == NOT_FOUND)
+      p = get_second_level_proc();
+
+    if (p == NOT_FOUND)
+      p = get_third_level_proc();
+
+    if (p != NOT_FOUND)
     {
-      if (p->state != RUNNABLE)
-        continue;
+      cprintf("\nprocess %d chosen \n", p->pid);
+      p->sch.waiting_time = 0;
+      p->sch.executed_cycles += 1;
+
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -378,6 +441,7 @@ scheduler(void)
       switchuvm(p);
       p->state = RUNNING;
 
+
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
@@ -385,6 +449,29 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+    
+
+    // for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    // {
+    //   if (p->state != RUNNABLE)
+    //     continue;
+
+    //   // Switch to chosen process.  It is the process's job
+    //   // to release ptable.lock and then reacquire it
+    //   // before jumping back to us.
+    //   c->proc = p;
+    //   switchuvm(p);
+    //   p->state = RUNNING;
+
+    //   cprintf("\nprocess %d chosen \n", p->pid);
+
+    //   swtch(&(c->scheduler), p->context);
+    //   switchkvm();
+
+    //   // Process is done running for now.
+    //   // It should have changed its p->state before coming back.
+    //   c->proc = 0;
+    // }
     release(&ptable.lock);
 
   }

@@ -12,11 +12,15 @@
 #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
 #define FSSIZE       1000  // size of file system in blocks
 
+#define NOT_FOUND NULL
+
+//
+
 //schedinfo parameters
 #define START_CYCLE 0 
 #define CYCLES_WAIT_BEFORE_AGE 8000 
 #define CYCLE_RATIO_PARAM 0.1
-#define START_SCHED_LEVEL 1
+#define START_SCHED_LEVEL 0
 
 #define INITIAL_LOTTERY_CHANCE 10
 #define INITIAL_PRIORITY_RATIO 1

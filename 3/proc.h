@@ -1,3 +1,4 @@
+#include <stdbool.h>
 // Per-CPU state
 struct cpu
 {
@@ -42,13 +43,14 @@ struct schedinfo
 {
   int level;                  // 0-> RR, 1->lottery, 2->BJF
   int start_time;             // ticks befor start
-  int waiting_time;           // 
+  int waiting_time;
   int lottery_chance;
-  int executed_cycle;
+  int executed_cycles;
   int priority;
   int priority_ratio;
   int start_time_ratio;
   int exec_cycle_ratio;
+  bool last_processed;
 };
 
 
