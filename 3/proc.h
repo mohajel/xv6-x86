@@ -36,6 +36,8 @@ struct context
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+
+// parameters for multilevel scheduling
 struct schedinfo
 {
   int level; // 0-> RR, 1->lottery, 2->BJF
