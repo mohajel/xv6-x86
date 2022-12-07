@@ -343,6 +343,22 @@ wait(void)
   }
 }
 
+int rand()
+{
+  static int prev_rand_num = 0;
+
+  acquire(&tickslock); //maybe not necessary
+  int r = ticks;
+  release(&tickslock);
+
+  int x;
+  int rand = (int) &x;
+  rand = (rand + r - prev_rand_num)*(-rand - r + prev_rand_num);
+  if (rand < 0)
+    rand = - rand;
+  prev_rand_num = rand;
+  return rand % 10000;
+}
 
 void update_waiting_time()
 {
@@ -361,13 +377,12 @@ struct proc* get_first_level_proc()
   struct proc* p = NOT_FOUND;
   static struct proc* prev_proc = ptable.proc;
   
-  for (p = prev_proc + 1; p < &ptable.proc[NPROC - 1]; p++)
+  for (p = prev_proc + 1; p < &ptable.proc[NPROC]; p++)
     if (p->state == RUNNABLE && p->sch.level == 0)
     {
       prev_proc = p;
       return p; 
     }
-
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if (p->state == RUNNABLE && p->sch.level == 0) 
     {
@@ -381,9 +396,24 @@ struct proc* get_first_level_proc()
 //LEVEL:1 -- POLICY:Lottery
 struct proc* get_second_level_proc()
 {
+  int lottery_sum = 0;
   struct proc* p = NOT_FOUND;
-  // return p;
-  return p;
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if (p->state == RUNNABLE && p->sch.level == 1)
+        lottery_sum += p->sch.lottery_chance;
+  
+  int chosen_lottery = rand() % lottery_sum;
+
+  lottery_sum = 0;
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if (p->state == RUNNABLE && p->sch.level == 1)
+    {
+      lottery_sum += p->sch.lottery_chance;
+      if (lottery_sum >= chosen_lottery)
+        return p;
+    }
+  return NOT_FOUND;
 }
 
 //LEVEL:2 -- POLICY:Best Job First
@@ -424,15 +454,15 @@ scheduler(void)
     if (p == NOT_FOUND)
       p = get_second_level_proc();
 
-    if (p == NOT_FOUND)
-      p = get_third_level_proc();
+    // if (p == NOT_FOUND)
+    //   p = get_third_level_proc();
 
     if (p != NOT_FOUND)
     {
       cprintf("\nprocess %d chosen \n", p->pid);
+
       p->sch.waiting_time = 0;
       p->sch.executed_cycles += 1;
-
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -440,40 +470,13 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
-
-
       swtch(&(c->scheduler), p->context);
       switchkvm();
-
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
-    
-
-    // for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    // {
-    //   if (p->state != RUNNABLE)
-    //     continue;
-
-    //   // Switch to chosen process.  It is the process's job
-    //   // to release ptable.lock and then reacquire it
-    //   // before jumping back to us.
-    //   c->proc = p;
-    //   switchuvm(p);
-    //   p->state = RUNNING;
-
-    //   cprintf("\nprocess %d chosen \n", p->pid);
-
-    //   swtch(&(c->scheduler), p->context);
-    //   switchkvm();
-
-    //   // Process is done running for now.
-    //   // It should have changed its p->state before coming back.
-    //   c->proc = 0;
-    // }
     release(&ptable.lock);
-
   }
 }
 
