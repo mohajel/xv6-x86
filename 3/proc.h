@@ -40,11 +40,15 @@ enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 // parameters for multilevel scheduling
 struct schedinfo
 {
-  int level; // 0-> RR, 1->lottery, 2->BJF
-  int start_time;
-  int waiting_time;
+  int level;                  // 0-> RR, 1->lottery, 2->BJF
+  int start_time;             // ticks befor start
+  int waiting_time;           // 
   int lottery_chance;
   int executed_cycle;
+  int priority;
+  int priority_ratio;
+  int start_time_ratio;
+  int exec_cycle_ratio;
 };
 
 
