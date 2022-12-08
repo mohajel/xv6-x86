@@ -402,6 +402,9 @@ struct proc* get_second_level_proc()
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if (p->state == RUNNABLE && p->sch.level == 1)
         lottery_sum += p->sch.lottery_chance;
+
+  if (lottery_sum == 0)
+  return NOT_FOUND;
   
   int chosen_lottery = rand() % lottery_sum;
 
