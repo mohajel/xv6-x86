@@ -364,11 +364,21 @@ void update_waiting_time()
 {
   struct proc *p;
 
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state != RUNNABLE)
-      continue;
-    p->sch.waiting_time += 1;
-  }
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if(p->state == RUNNABLE)
+      p->sch.waiting_time += 1;
+}
+
+void aging()
+{
+  struct proc *p;
+  
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if(p->state == RUNNABLE && p->sch.level != 0 && p->sch.waiting_time >= CYCLES_WAIT_BEFORE_AGE)
+    {
+      cprintf("\n process with pid:%d, name:%s level:%d aged to level 0\n", p->pid, p->name, p->sch.level);
+      p->sch.level = 0;
+    }
 }
 
 //LEVEL:0 -- POLICY:Round Robin
@@ -419,13 +429,31 @@ struct proc* get_second_level_proc()
   return NOT_FOUND;
 }
 
+
+int get_rank(struct proc* p)
+{
+  int rank = (p->sch.priority * p->sch.priority_ratio) +
+                (p->sch.start_time * p->sch.start_time_ratio) +
+                (p->sch.executed_cycles * p->sch.exec_cycle_ratio);
+  return rank;
+}
+
 //LEVEL:2 -- POLICY:Best Job First
 struct proc* get_third_level_proc()
 {
   struct proc* p = NOT_FOUND;
-  // return p;
-  return p;
+  struct proc* best_process = NOT_FOUND;
+  double best_rank = INF;
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if (p->state == RUNNABLE && p->sch.level == 2 && get_rank(p) < best_rank)
+    {
+      best_rank = get_rank(p);
+      best_process = p;
+    }
+  return best_process;
 }
+
 
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
@@ -448,21 +476,19 @@ scheduler(void)
 
     // Enable interrupts on this processor.
     sti();
-
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
 
     p = get_first_level_proc();
-
     if (p == NOT_FOUND)
       p = get_second_level_proc();
-
-    // if (p == NOT_FOUND)
-    //   p = get_third_level_proc();
+    if (p == NOT_FOUND)
+      p = get_third_level_proc();
 
     if (p != NOT_FOUND)
     {
       cprintf("\nprocess %d chosen \n", p->pid);
+      // cprintf("\n process with pid:%d, name:%s rank: %d \n", p->pid, p->name, get_rank(p));
 
       p->sch.waiting_time = 0;
       p->sch.executed_cycles += 1;
@@ -479,6 +505,9 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+    update_waiting_time();
+    aging();
+
     release(&ptable.lock);
   }
 }

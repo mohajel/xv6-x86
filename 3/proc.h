@@ -1,4 +1,3 @@
-#include <stdbool.h>
 // Per-CPU state
 struct cpu
 {
@@ -37,7 +36,6 @@ struct context
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
-
 // parameters for multilevel scheduling
 struct schedinfo
 {
@@ -50,9 +48,7 @@ struct schedinfo
   int priority_ratio;
   int start_time_ratio;
   int exec_cycle_ratio;
-  bool last_processed;
 };
-
 
 // Per-process state
 struct proc
