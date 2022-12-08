@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     fork();
     while(1)
     {
-      printf(1, "0\n");
+      // printf(1, "0\n");
       // sleep(200);
     }
   }
@@ -32,13 +32,11 @@ int main(int argc, char *argv[])
   {
     while(1)
     {
-      printf(1, "1\n");
+      // printf(1, "1\n");
       // sleep(200);
     }
 
   }
-  
-  
   exit();
 }
 

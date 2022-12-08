@@ -121,6 +121,15 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 
+//Added Recently!
+int             rand();
+void            update_waiting_time();
+void            aging();
+struct proc*    get_first_level_proc();
+struct proc*    get_second_level_proc();
+int             get_rank(struct proc* p);
+struct proc*    get_third_level_proc();
+
 // swtch.S
 void            swtch(struct context**, struct context*);
 

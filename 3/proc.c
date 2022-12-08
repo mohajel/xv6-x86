@@ -429,12 +429,11 @@ struct proc* get_second_level_proc()
   return NOT_FOUND;
 }
 
-
 int get_rank(struct proc* p)
 {
   int rank = (p->sch.priority * p->sch.priority_ratio) +
                 (p->sch.start_time * p->sch.start_time_ratio) +
-                (p->sch.executed_cycles * p->sch.exec_cycle_ratio);
+                (p->sch.executed_cycles * p->sch.exec_cycle_ratio * CYCLE_RATIO_PARAM);
   return rank;
 }
 
@@ -443,7 +442,7 @@ struct proc* get_third_level_proc()
 {
   struct proc* p = NOT_FOUND;
   struct proc* best_process = NOT_FOUND;
-  double best_rank = INF;
+  int best_rank = INF;
 
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if (p->state == RUNNABLE && p->sch.level == 2 && get_rank(p) < best_rank)
@@ -489,6 +488,7 @@ scheduler(void)
     {
       cprintf("\nprocess %d chosen \n", p->pid);
       // cprintf("\n process with pid:%d, name:%s rank: %d \n", p->pid, p->name, get_rank(p));
+
 
       p->sch.waiting_time = 0;
       p->sch.executed_cycles += 1;
