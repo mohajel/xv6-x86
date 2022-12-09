@@ -105,6 +105,7 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_ok(void);
 extern int sys_change_queue(void);
+extern int sys_assign_lottery_ticket(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -130,6 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_ok]      sys_ok,
 [SYS_change_queue] sys_change_queue,
+[SYS_assign_lottery_ticket] sys_assign_lottery_ticket,
 };
 
 void

@@ -55,6 +55,8 @@ struct schedinfo
 #define SCHED_BJF 2
 #define SCHED_LAST_QUEUE 2
 
+#define MAX_POSSIBLE_LOTTERY_TICKET 10000
+
 // Per-process state
 struct proc
 {

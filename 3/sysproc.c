@@ -110,5 +110,19 @@ sys_change_queue(void){
   }
 
   return change_queue(pid, dst_level);
+}
 
+int 
+sys_assign_lottery_ticket(void){
+
+  int pid, ticket_count;
+
+  if(argint(0, &pid) < 0)
+    return -1;
+
+  if(argint(1, &ticket_count) < 0 || ticket_count < 0 || ticket_count > MAX_POSSIBLE_LOTTERY_TICKET){
+    return -1;
+  }
+
+  return assign_lottery_ticket(pid, ticket_count);
 }

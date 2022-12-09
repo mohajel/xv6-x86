@@ -716,3 +716,22 @@ change_queue(int pid, int dst_level){
   release(&ptable.lock);
   return -2;
 }
+
+int             
+assign_lottery_ticket(int pid, int ticket_count){
+
+  struct proc *p;
+
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->sch.lottery_chance = ticket_count;
+      release(&ptable.lock);
+      return 0;
+    }
+  }
+
+  release(&ptable.lock);
+  return -2;
+}

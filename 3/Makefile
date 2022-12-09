@@ -185,7 +185,8 @@ UPROGS=\
 	_sample1\
 	_prime_numbers\
 	_change_queue\
-
+	_assign_lottery_ticket\
+	
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 

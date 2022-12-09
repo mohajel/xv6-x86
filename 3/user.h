@@ -12,6 +12,7 @@ int close(int);
 int kill(int);
 int exec(char*, char**);
 int change_queue(int,int);
+int assign_lottery_ticket(int, int);
 
 int open(const char*, int);
 int mknod(const char*, short, short);
