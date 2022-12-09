@@ -22,3 +22,4 @@
 #define SYS_close  21
 // ADDED
 #define SYS_ok     22 
+#define SYS_change_queue 23

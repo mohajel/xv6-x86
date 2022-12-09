@@ -120,6 +120,7 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+int             change_queue(int, int);
 
 //Added Recently!
 int             rand();

@@ -95,3 +95,20 @@ sys_ok(void)
 {
   return 13;
 }
+
+
+int
+sys_change_queue(void){
+
+  int pid, dst_level;
+
+  if(argint(0, &pid) < 0)
+    return -1;
+
+  if(argint(1, &dst_level) < 0 || dst_level < 0 || dst_level > SCHED_LAST_QUEUE){
+    return -1;
+  }
+
+  return change_queue(pid, dst_level);
+
+}

@@ -696,3 +696,23 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+
+int
+change_queue(int pid, int dst_level){
+
+  struct proc *p;
+
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->sch.level = dst_level;
+      release(&ptable.lock);
+      return 0;
+    }
+  }
+
+  release(&ptable.lock);
+  return -2;
+}

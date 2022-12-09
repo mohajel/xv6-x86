@@ -50,6 +50,11 @@ struct schedinfo
   int exec_cycle_ratio;
 };
 
+#define SCHED_RR 0
+#define SCHED_LOTTERY 1
+#define SCHED_BJF 2
+#define SCHED_LAST_QUEUE 2
+
 // Per-process state
 struct proc
 {
