@@ -124,6 +124,7 @@ void            yield(void);
 int             change_queue(int, int);
 int             assign_lottery_ticket(int, int);
 int             set_bjf_params(int,int,int,int);
+int             set_sched_params(int,int,int);
 
 //Added Recently!
 int             rand();

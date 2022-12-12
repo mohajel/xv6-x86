@@ -107,6 +107,7 @@ extern int sys_ok(void);
 extern int sys_change_queue(void);
 extern int sys_assign_lottery_ticket(void);
 extern int sys_set_bjf_params(void);
+extern int sys_set_sched_params(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -133,7 +134,8 @@ static int (*syscalls[])(void) = {
 [SYS_ok]      sys_ok,
 [SYS_change_queue] sys_change_queue,
 [SYS_assign_lottery_ticket] sys_assign_lottery_ticket,
-[SYS_set_bjf_params] sys_set_bjf_params
+[SYS_set_bjf_params] sys_set_bjf_params,
+[SYS_set_sched_params] sys_set_sched_params
 };
 
 void

@@ -187,6 +187,7 @@ UPROGS=\
 	_change_queue\
 	_assign_lottery_ticket\
 	_set_bjf_params\
+	_set_sched_params\
 	
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

@@ -775,3 +775,14 @@ set_bjf_params(int pid, int start_time, int executed_cycles, int priority){
   release(&ptable.lock);
   return -2;
 }
+
+int
+set_sched_params(int priority_ratio, int start_time_ratio, int exec_cycle_ratio){
+
+  acquire(&scheduling_parameters.lock);
+  scheduling_parameters.priority_ratio = priority_ratio;
+  scheduling_parameters.start_time_ratio = start_time_ratio;
+  scheduling_parameters.exec_cycle_ratio = exec_cycle_ratio;
+  release(&scheduling_parameters.lock);
+  return 0;
+}

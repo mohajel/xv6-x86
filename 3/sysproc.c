@@ -141,3 +141,19 @@ sys_set_bjf_params(void){
 
   return set_bjf_params(pid, start_time,executed_cycles,priority);
 }
+
+int
+sys_set_sched_params(void){
+
+  int priority_ratio;
+  int start_time_ratio;
+  int exec_cycle_ratio;
+
+
+  if(argint(0, &priority_ratio) < 0 || argint(1, &start_time_ratio) < 0 || argint(2, &exec_cycle_ratio) < 0)
+    return -1;
+
+  
+
+  return set_sched_params(priority_ratio,start_time_ratio,exec_cycle_ratio);
+}
