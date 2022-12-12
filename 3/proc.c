@@ -14,6 +14,15 @@ struct
   struct proc proc[NPROC];
 } ptable;
 
+
+struct
+{
+  int priority_ratio;
+  int start_time_ratio;
+  int exec_cycle_ratio;
+  struct spinlock lock;
+} scheduling_parameters;
+
 static struct proc* initproc;
 
 int nextpid = 1;
@@ -28,8 +37,16 @@ pinit(void)
   initlock(&ptable.lock, "ptable");
 }
 
+void            
+schedinit(void){
+  initlock(&scheduling_parameters.lock, "scheduling_parameters");
+  scheduling_parameters.priority_ratio = INITIAL_PRIORITY_RATIO;
+  scheduling_parameters.exec_cycle_ratio = INITIAL_CYCLE_RATIO;
+  scheduling_parameters.start_time_ratio = INITIAL_START_TIME_RATIO;
+}
+
 // Must be called with interrupts disabled
-int
+int 
 cpuid()
 {
   return mycpu() - cpus;
@@ -103,9 +120,6 @@ found:
   p->sch.lottery_chance = INITIAL_LOTTERY_CHANCE;
   p->sch.executed_cycles = START_CYCLE;
   p->sch.priority = p->pid; //very good decision indeed
-  p->sch.priority_ratio = INITIAL_PRIORITY_RATIO;
-  p->sch.start_time_ratio = INITIAL_START_TIME_RATIO;
-  p->sch.exec_cycle_ratio = INITIAL_CYCLE_RATIO;
   
   release(&ptable.lock);
 
@@ -431,9 +445,14 @@ struct proc* get_second_level_proc()
 
 int get_rank(struct proc* p)
 {
-  int rank = (p->sch.priority * p->sch.priority_ratio) +
-                (p->sch.start_time * p->sch.start_time_ratio) +
-                (p->sch.executed_cycles * p->sch.exec_cycle_ratio * CYCLE_RATIO_PARAM);
+  acquire(&scheduling_parameters.lock);
+
+  int rank =    (p->sch.priority * scheduling_parameters.priority_ratio) +
+                (p->sch.start_time * scheduling_parameters.start_time_ratio) +
+                (p->sch.executed_cycles * scheduling_parameters.exec_cycle_ratio * CYCLE_RATIO_PARAM);
+
+  release(&scheduling_parameters.lock);
+
   return rank;
 }
 
@@ -727,6 +746,27 @@ assign_lottery_ticket(int pid, int ticket_count){
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid == pid){
       p->sch.lottery_chance = ticket_count;
+      release(&ptable.lock);
+      return 0;
+    }
+  }
+
+  release(&ptable.lock);
+  return -2;
+}
+
+int 
+set_bjf_params(int pid, int start_time, int executed_cycles, int priority){
+
+  struct proc *p;
+
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->sch.priority = priority;
+      p->sch.executed_cycles = executed_cycles;
+      p->sch.start_time = start_time;
       release(&ptable.lock);
       return 0;
     }

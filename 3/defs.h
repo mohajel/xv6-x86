@@ -111,6 +111,7 @@ int             kill(int);
 struct cpu*     mycpu(void);
 struct proc*    myproc();
 void            pinit(void);
+void            schedinit(void);
 void            procdump(void);
 void            scheduler(void) __attribute__((noreturn));
 void            sched(void);
@@ -122,6 +123,7 @@ void            wakeup(void*);
 void            yield(void);
 int             change_queue(int, int);
 int             assign_lottery_ticket(int, int);
+int             set_bjf_params(int,int,int,int);
 
 //Added Recently!
 int             rand();

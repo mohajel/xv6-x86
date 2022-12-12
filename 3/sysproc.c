@@ -126,3 +126,18 @@ sys_assign_lottery_ticket(void){
 
   return assign_lottery_ticket(pid, ticket_count);
 }
+
+int 
+sys_set_bjf_params(void){
+
+  int pid;
+  int start_time, executed_cycles, priority;
+
+  if(argint(0, &pid) < 0)
+    return -1;
+
+  if(argint(1, &start_time) < 0 || argint(2, &executed_cycles) < 0 || argint(3, &priority) < 0)
+    return -1;
+
+  return set_bjf_params(pid, start_time,executed_cycles,priority);
+}

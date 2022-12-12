@@ -24,3 +24,4 @@
 #define SYS_ok     22 
 #define SYS_change_queue 23
 #define SYS_assign_lottery_ticket 24 
+#define SYS_set_bjf_params 25

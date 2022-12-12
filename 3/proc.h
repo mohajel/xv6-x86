@@ -45,9 +45,6 @@ struct schedinfo
   int lottery_chance;
   int executed_cycles;
   int priority;
-  int priority_ratio;
-  int start_time_ratio;
-  int exec_cycle_ratio;
 };
 
 #define SCHED_RR 0

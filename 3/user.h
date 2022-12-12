@@ -13,7 +13,7 @@ int kill(int);
 int exec(char*, char**);
 int change_queue(int,int);
 int assign_lottery_ticket(int, int);
-
+int set_bjf_params(int pid,int start_time,int executed_cycles,int priority);
 int open(const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
