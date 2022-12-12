@@ -786,3 +786,33 @@ set_sched_params(int priority_ratio, int start_time_ratio, int exec_cycle_ratio)
   release(&scheduling_parameters.lock);
   return 0;
 }
+
+void
+print_proc_info(){
+
+  static char* states[] = {
+  [UNUSED] "unused",
+  [EMBRYO]    "embryo",
+  [SLEEPING]  "sleep ",
+  [RUNNABLE]  "runble",
+  [RUNNING]   "run   ",
+  [ZOMBIE]    "zombie"
+  };
+
+  struct proc *p;
+
+  acquire(&ptable.lock);
+
+  cprintf("name            pid     state     level     cycle     arrivel      tickets     rank\n\n");
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state == UNUSED){
+      continue;
+    }
+
+    cprintf("%s %d %s %d %d %d %d %d\n", p->name, p->pid, states[p->state], p->sch.level, p->sch.executed_cycles, p->sch.start_time, p->sch.lottery_chance, get_rank(p)); 
+  }
+
+  release(&ptable.lock);
+
+}

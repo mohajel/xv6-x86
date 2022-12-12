@@ -157,3 +157,8 @@ sys_set_sched_params(void){
 
   return set_sched_params(priority_ratio,start_time_ratio,exec_cycle_ratio);
 }
+
+void 
+sys_print_proc_info(void){
+  print_proc_info();
+}

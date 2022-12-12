@@ -26,3 +26,4 @@
 #define SYS_assign_lottery_ticket 24 
 #define SYS_set_bjf_params 25
 #define SYS_set_sched_params 26
+#define SYS_print_proc_info 27

@@ -188,6 +188,7 @@ UPROGS=\
 	_assign_lottery_ticket\
 	_set_bjf_params\
 	_set_sched_params\
+	_print_proc_info\
 	
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

@@ -125,6 +125,7 @@ int             change_queue(int, int);
 int             assign_lottery_ticket(int, int);
 int             set_bjf_params(int,int,int,int);
 int             set_sched_params(int,int,int);
+void            print_proc_info(void);
 
 //Added Recently!
 int             rand();

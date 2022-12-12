@@ -15,7 +15,7 @@ int change_queue(int,int);
 int assign_lottery_ticket(int, int);
 int set_bjf_params(int pid,int start_time,int executed_cycles,int priority);
 int set_sched_params(int,int,int);
-
+void print_proc_info();
 int open(const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
