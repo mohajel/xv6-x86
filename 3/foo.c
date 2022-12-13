@@ -26,11 +26,9 @@ run_proc(Proc_Main main){
     }
 }
 
-
 int
 main(int argc, char const *argv[])
 {
-
 
     int children_count = 10;
 

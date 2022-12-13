@@ -1,0 +1,31 @@
+foo&
+
+print_proc_info
+
+change_queue x 2
+
+change_queue y 2
+
+change_queue z 2
+
+set_bjf_params y 0 0 0
+
+set_bjf_params z 0 0 0
+
+set_bjf_params x 1000 1000 1000
+
+print_proc_info
+
+assign_lottery_ticket x 0
+
+assign_lottery_ticket y 100000
+
+assign_lottery_ticket z 100000
+
+assign_lottery_ticket a 100000
+
+print_proc_info
+
+print_proc_info
+
+print_proc_info

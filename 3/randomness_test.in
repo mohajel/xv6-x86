@@ -1,0 +1,21 @@
+foo&
+
+print_proc_info
+
+assign_lottery_ticket x 50
+
+assign_lottery_ticket y 25
+
+assign_lottery_ticket z 5
+
+assign_lottery_ticket a 200
+
+assign_lottery_ticket b 500
+
+print_proc_info
+
+print_proc_info
+
+print_proc_info
+
+print_proc_info
