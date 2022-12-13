@@ -18,8 +18,7 @@
 
 //schedinfo parameters
 #define START_CYCLE 0 
-#define CYCLES_WAIT_BEFORE_AGE 500
-#define CYCLE_RATIO_PARAM 1
+#define CYCLES_WAIT_BEFORE_AGE 8000
 #define START_SCHED_LEVEL 1
 
 #define INITIAL_LOTTERY_CHANCE 100

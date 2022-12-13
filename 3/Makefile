@@ -189,6 +189,7 @@ UPROGS=\
 	_set_bjf_params\
 	_set_sched_params\
 	_print_proc_info\
+	_foo\
 	
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

@@ -390,8 +390,7 @@ void aging()
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == RUNNABLE && p->sch.level != 0 && p->sch.waiting_time >= CYCLES_WAIT_BEFORE_AGE)
     {
-      cprintf("\n process with pid:%d, name:%s level:%d aged to level 0\n", p->pid, p->name, p->sch.level);
-      p->sch.level = 0;
+      p->sch.level = p->sch.level - 1;
     }
 }
 
@@ -449,7 +448,8 @@ int get_rank(struct proc* p)
 
   int rank =    (p->sch.priority * scheduling_parameters.priority_ratio) +
                 (p->sch.start_time * scheduling_parameters.start_time_ratio) +
-                (p->sch.executed_cycles * scheduling_parameters.exec_cycle_ratio * CYCLE_RATIO_PARAM);
+                (p->sch.executed_cycles * scheduling_parameters.exec_cycle_ratio
+                );
 
   release(&scheduling_parameters.lock);
 
@@ -505,9 +505,8 @@ scheduler(void)
 
     if (p != NOT_FOUND)
     {
-      cprintf("\nprocess %d chosen \n", p->pid);
-      // cprintf("\n process with pid:%d, name:%s rank: %d \n", p->pid, p->name, get_rank(p));
 
+      //cprintf(" --> %d\n", p->pid);
 
       p->sch.waiting_time = 0;
       p->sch.executed_cycles += 1;
