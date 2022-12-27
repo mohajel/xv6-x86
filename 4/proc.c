@@ -15,6 +15,17 @@ struct
 
 static struct proc* initproc;
 
+struct semaphore
+{
+    int value;
+    int begin;
+    int end;
+    struct proc* list[NPROC];
+    struct spinlock lock;
+};
+
+struct semaphore semaphores[NSEMAPHORE];//make it static if necessary
+
 int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
@@ -481,22 +492,22 @@ sleep(void* chan, struct spinlock* lk)
 // Wake up all processes sleeping on chan.
 // The ptable lock must be held.
 static void
-wakeup1(void* chan)
+wakeup1(void *chan)
 {
-    struct proc* p;
+  struct proc *p;
 
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-        if (p->state == SLEEPING && p->chan == chan)
-            p->state = RUNNABLE;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if(p->state == SLEEPING && p->chan == chan)
+      p->state = RUNNABLE;
 }
 
 // Wake up all processes sleeping on chan.
 void
-wakeup(void* chan)
+wakeup(void *chan)
 {
-    acquire(&ptable.lock);
-    wakeup1(chan);
-    release(&ptable.lock);
+  acquire(&ptable.lock);
+  wakeup1(chan);
+  release(&ptable.lock);
 }
 
 // Kill the process with the given pid.
@@ -564,22 +575,66 @@ procdump(void)
 }
 
 
+int sem_signal(struct semaphore* s)
+{
+    s->value ++;
+    if (s->value <= 0) //assures that there is at least 1 proc waiting in list
+    {
+        struct proc* waiting_proc = s->list[s->begin];
+        wakeup(&(waiting_proc->pid));
+        s->begin = (s->begin + 1) % NPROC;
+    }
+    return 1;
+}
+
+int sem_wait(struct semaphore* s)
+{
+    s->value --;
+    if (s->value < 0)
+    {
+        struct proc* cur_proc = myproc();
+        int index = (s->end + 1) % NPROC;
+
+        if (index == s->begin) //list is full
+            return-1;
+        s->end = index;
+        s->list[s->end] = cur_proc;
+        sleep(&cur_proc->pid, &s->lock);
+    }
+    return 1;
+}
+
 int sem_init(int i, int v)
 {
-    cprintf("inside sem_init: i=%d, v=%d \n", i, v);
+    // cprintf("inside sem_init: i=%d, v=%d \n", i, v);
+    semaphores[i].value = v;
+    semaphores[i].begin = 0;
+    semaphores[i].end = 0;
     return 0;
 }
 
-int sem_acquire(int i)
+int sem_acquire(int i) //wait()
 {
-    cprintf("inside sem_aquire: i=%d\n", i);
+    // cprintf("inside sem_aquire: i=%d\n", i);
 
-    return 0;
+    acquire(&semaphores[i].lock);
+
+    int status = sem_wait(&semaphores[i]);
+
+    release(&semaphores[i].lock);
+
+    return status;
 }
 
-int sem_release(int i)
+int sem_release(int i) //signal()
 {
-    cprintf("inside sem_realese: i=%d \n", i);
+    // cprintf("inside sem_realese: i=%d \n", i);
 
-    return 0;
+    acquire(&semaphores[i].lock);
+
+    int status = sem_signal(&semaphores[i]);
+
+    release(&semaphores[i].lock);
+    
+    return status;
 }
