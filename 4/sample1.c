@@ -1,7 +1,9 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
-#include "fcntl.h"
+// #include "fcntl.h"
+
+
 #define SEMCOUNT 5
 #define EATROUND 3
 
@@ -33,23 +35,23 @@ void philosopher(int id, int right_fork, int left_fork)
 
         if (id % 2 == 0) //first right then left
         {
-            printf(1, "philosopher %d , acquireing right fork:%d:\n", id, right_fork);
-            sem_acquire(right_fork);
-            printf(1, "philosopher %d , acquireing left fork:%d:\n", id, left_fork);
-            sem_acquire(left_fork);
+            // printf(1, "philosopher %d , acquireing right fork:%d:\n", id, right_fork);
+            // sem_acquire(right_fork);
+            // printf(1, "philosopher %d , acquireing left fork:%d:\n", id, left_fork);
+            // sem_acquire(left_fork);
         }
         else if (id % 2 == 1) //first left then right
         {
-            printf(1, "philosopher %d , acquireing right fork:%d:\n", id, right_fork);
-            sem_acquire(right_fork);
-            printf(1, "philosopher %d , acquireing left fork:%d:\n", id, left_fork);
-            sem_acquire(left_fork);
+            // printf(1, "philosopher %d , acquireing right fork:%d:\n", id, right_fork);
+            // sem_acquire(right_fork);
+            // printf(1, "philosopher %d , acquireing left fork:%d:\n", id, left_fork);
+            // sem_acquire(left_fork);
         }
         printf(1, "philosopher %d , started eating\n", id);
         sleep(99 * id);
         sleep(500);
-        sem_release(right_fork);
-        sem_release(left_fork);
+        // sem_release(right_fork);
+        // sem_release(left_fork);
         printf(1, "philosopher %d , released both forks and started thinking\n", id);
         sleep(142 * id);
         sleep(500);
@@ -58,13 +60,13 @@ void philosopher(int id, int right_fork, int left_fork)
 
 int main(int argc, char* argv[])
 {
-    for (int i = 0; i < SEMCOUNT; i++)
+    printf(1, "hello\n\n");
+    for (int i = 0; i < 1; i++)
         sem_init(i, 1);
 
-    for (int i = 0; i < SEMCOUNT; i++)
+    for (int i = 0; i < 5; i++)
     {
         int pid = fork();
-
         if (pid == 0)
             philosopher(i, i, (i + 1) % 5);
     }

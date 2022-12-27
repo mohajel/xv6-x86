@@ -184,6 +184,7 @@ UPROGS=\
 	_zombie\
 	_sample1\
 	_prime_numbers\
+	_phil_stone\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -245,7 +246,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 	$(QEMU) -nographic $(QEMUOPTS) -S $(QEMUGDB)
 
 # CUT HERE
-# prepare dist for students
+# prepare dist for studentsphil_stone
 # after running make dist, probably want to
 # rename it to rev0 or rev1 or so on and then
 # check in that version.
@@ -253,7 +254,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
-	sample1.c prime_numbers.c\
+	sample1.c prime_numbers.c phil_stone.c\
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
@@ -281,7 +282,7 @@ dist-test:
 
 # update this rule (change rev#) when it is time to
 # make a new revision.
-tar:
+tar:phil_stone
 	rm -rf /tmp/xv6
 	mkdir -p /tmp/xv6
 	cp dist/* dist/.gdbinit.tmpl /tmp/xv6

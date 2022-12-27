@@ -24,7 +24,7 @@ struct semaphore
     struct spinlock lock;
 };
 
-struct semaphore semaphores[NSEMAPHORE];//make it static if necessary
+static struct semaphore semaphores[5];//make it static if necessary
 
 int nextpid = 1;
 extern void forkret(void);
@@ -597,8 +597,8 @@ int sem_wait(struct semaphore* s)
 
         if (index == s->begin) //list is full
             return-1;
-        s->end = index;
         s->list[s->end] = cur_proc;
+        s->end = index;
         sleep(&cur_proc->pid, &s->lock);
     }
     return 1;
@@ -606,7 +606,7 @@ int sem_wait(struct semaphore* s)
 
 int sem_init(int i, int v)
 {
-    cprintf("inside sem_init: i=%d, v=%d \n", i, v);
+    // cprintf("inside sem_init: i=%d, v=%d \n", i, v);
     semaphores[i].value = v;
     semaphores[i].begin = 0;
     semaphores[i].end = 0;
@@ -615,7 +615,7 @@ int sem_init(int i, int v)
 
 int sem_acquire(int i) //wait()
 {
-    cprintf("inside sem_aquire: i=%d\n", i);
+    // cprintf("inside sem_aquire: i=%d\n", i);
 
     acquire(&semaphores[i].lock);
 
@@ -628,7 +628,7 @@ int sem_acquire(int i) //wait()
 
 int sem_release(int i) //signal()
 {
-    cprintf("inside sem_realese: i=%d \n", i);
+    // cprintf("inside sem_realese: i=%d \n", i);
 
     acquire(&semaphores[i].lock);
 
