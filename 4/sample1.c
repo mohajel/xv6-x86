@@ -11,6 +11,11 @@ int main(int argc, char *argv[])
 {
   printf(1, "........sample 1......\n");
   printf(2, "my favorite number is : %d\n", ok());
+  
+  //test 1:
+  sem_init(2,5);
+  sem_acquire(6);
+  sem_release(90);
   exit();
 }
 

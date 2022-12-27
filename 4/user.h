@@ -25,8 +25,9 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int ok(void);
-
-
+int sem_init(int, int);
+int sem_acquire(int);
+int sem_release(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

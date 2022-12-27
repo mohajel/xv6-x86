@@ -120,6 +120,10 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+int             sem_init(int i, int v);
+int             sem_acquire(int i);
+int             sem_release(int i);
+
 
 // swtch.S
 void            swtch(struct context**, struct context*);

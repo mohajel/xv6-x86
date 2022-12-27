@@ -18,6 +18,7 @@ sysproc.c -> add body
 
 usys.S -> SYSCALL(getyear)
 user.h -> int getyear(void);
+defs.h -> int getyear(void); in proc.c part
 ------------------------------------------
 
 int find_largest_prime_factor(int n)

@@ -21,4 +21,7 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 // ADDED
-#define SYS_ok     22 
+#define SYS_ok              22 
+#define SYS_sem_init        23 
+#define SYS_sem_acquire     24 
+#define SYS_sem_release     25 
