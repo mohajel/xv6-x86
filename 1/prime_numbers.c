@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
   int smaller_num = (first_num < second_num) ? first_num : second_num;
   int bigger_num = (first_num < second_num) ? second_num : first_num;
 
-  int pid = open("p_nums.tex", O_CREATE | O_RDWR);
+  int pid = open("p_nums.tex", O_CREATE | O_WRONLY);
 
   for (int i = smaller_num; i <= bigger_num; ++i)
     if (is_prime(i))
